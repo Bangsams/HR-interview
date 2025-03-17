@@ -1,3 +1,4 @@
 streamlit
 openai
+OpenAI
 streamlit-js-eval
