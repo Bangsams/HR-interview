@@ -1,6 +1,6 @@
-import streamlit as st
-import openai  # Perbaikan impor OpenAI
-from streamlit_js_eval import streamlit_js_eval
+import streamlit as st # type: ignore
+import openai  # type: ignore # Perbaikan impor OpenAI
+from streamlit_js_eval import streamlit_js_eval # type: ignore
 
 # Setting up the Streamlit page configuration
 st.set_page_config(page_title="DATMIN HR", page_icon="📊")
