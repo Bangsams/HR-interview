@@ -1,5 +1,5 @@
 import streamlit as st
-from openai import OpenAI
+import openai  # Perbaikan impor OpenAI
 from streamlit_js_eval import streamlit_js_eval
 
 # Setting up the Streamlit page configuration
@@ -58,15 +58,10 @@ if not st.session_state.setup_complete:
 # Interview phase
 if st.session_state.setup_complete and not st.session_state.feedback_shown and not st.session_state.chat_complete:
 
-    st.info(
-    """
-    Start by introducing yourself
-    """,
-    icon="👋",
-    )
+    st.info("Start by introducing yourself", icon="👋")
 
     # Initialize OpenAI client
-    client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+    client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
     # Setting OpenAI model if not already initialized
     if "openai_model" not in st.session_state:
@@ -96,16 +91,16 @@ if st.session_state.setup_complete and not st.session_state.feedback_shown and n
 
             if st.session_state.user_message_count < 4:
                 with st.chat_message("assistant"):
-                    stream = client.chat.completions.create(
+                    response = client.chat.completions.create(
                         model=st.session_state["openai_model"],
                         messages=[
                             {"role": m["role"], "content": m["content"]}
                             for m in st.session_state.messages
-                        ],
-                        stream=True,
+                        ]
                     )
-                    response = st.write_stream(stream)
-                st.session_state.messages.append({"role": "assistant", "content": response})
+                    response_text = response.choices[0].message.content
+                    st.markdown(response_text)
+                st.session_state.messages.append({"role": "assistant", "content": response_text})
 
             # Increment the user message count
             st.session_state.user_message_count += 1
@@ -126,7 +121,7 @@ if st.session_state.feedback_shown:
     conversation_history = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state.messages])
 
     # Initialize new OpenAI client instance for feedback
-    feedback_client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+    feedback_client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
     # Generate feedback using the stored messages
     feedback_completion = feedback_client.chat.completions.create(
